@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" href="https://unpkg.com/@fortawesome/fontawesome-free@6.5.1/svgs/solid/microchip.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui" />
+  <meta name="theme-color" content="#569aff" />
+  <title>ESP32 Temperature Controller</title>
+  <link rel="stylesheet" href="https://unpkg.com/vuetify@3.5.1/dist/vuetify.min.css" />
+  <link rel="stylesheet" href="https://unpkg.com/@mdi/font@5.9.55/css/materialdesignicons.min.css" />
+</head>
+
+<body>
+  <script type="importmap">
+    {
+      "imports": {
+        "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js",
+        "vuetify": "https://unpkg.com/vuetify@3.5.1/dist/vuetify.esm.js"
+      }
+    }
+  </script>
+  <div class="hidden" id="app">
+    <v-layout class="rounded rounded-md">
+      <v-app-bar elevation="1">
+        <v-app-bar-title>ESP32 Temperature Controller</v-app-bar-title>
+        <template v-slot:append>
+          <v-btn icon="mdi-cloud-upload"></v-btn>
+        </template>
+      </v-app-bar>
+
+      <v-main>
+        <v-container fluid>
+          <v-row align="center" justify="center">
+            <v-col>
+              <v-card variant="flat">
+                <v-card-item>
+                  <div class="text-overline mb-1">Ambient temperature and humidity</div>
+                  <v-row align="center" justify="center" style="min-height: 100px;">
+                    <v-col><div class="text-h6 text-center"><v-icon icon="mdi-home-thermometer-outline"></v-icon>35.7&deg;C</div></v-col>
+                    <v-col><div class="text-h6 text-center"><v-icon icon="mdi-water-percent"></v-icon>57.9%</div></v-col>
+                  </v-row>
+                </v-card-item>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-divider class="border-opacity-25"></v-divider>
+          <v-row align="center" justify="center">
+            <v-col>
+              <v-card variant="flat">
+                <v-card-item>
+                  <div class="text-overline mb-1">Prob temperature</div>
+                  <v-row align="end" justify="center" style="min-height: 70px;">
+                    <v-col><div class="text-h6 text-center"><v-icon icon="mdi-thermometer"></v-icon>35.7&deg;C</div></v-col>
+                    <v-col><div class="text-h6 text-center"><v-icon icon="mdi-thermometer"></v-icon>N/A</div></v-col>
+                  </v-row>
+                  <v-row align="start" justify="center">
+                    <v-col><div class="text-caption text-center">Prob 1</div></v-col>
+                    <v-col><div class="text-caption text-center">Prob 2</div></v-col>
+                  </v-row>
+                </v-card-item>
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-divider class="border-opacity-25"></v-divider>
+          <v-row align="center" justify="center">
+            <v-col>
+              <v-card variant="flat">
+                <v-card-item>
+                  <div class="mb-1 text-overline">Heater</div>
+                  <template v-slot:append>
+                    <v-switch density="compact" hide-details>
+                      <template v-slot:label><div class="text-caption">Heater Disabled</div></template>
+                    </v-switch>
+                  </template>
+                </v-card-item>
+                <v-card-text>
+                  <v-row align="center" justify="center">
+                    <v-col><v-sheet class="text-h6 text-center"><v-icon icon="mdi-thermometer"></v-icon>35.7&deg;C</v-sheet></v-col>
+                    <v-col><v-sheet class="text-h6 text-center"><v-icon icon="mdi-power-plug"></v-icon>57.9%</v-sheet></v-col>
+                  </v-row>
+                  <v-row align="start" justify="center">
+                    <v-col><div class="text-caption text-center">Fixed Temp Mode</div></v-col>
+                    <v-col><div class="text-caption text-center">Fixed Power Mode</div></v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-main>
+    </v-layout>
+  </div>
+  <style>
+    .hidden {
+      display: none !important;
+    }
+    .layout {
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+    .layout .title {
+      margin: 40px auto;
+      font-size: 1.25rem !important;
+      font-weight: 500;
+      letter-spacing: .0125em !important;
+      line-height: 2rem;
+    }
+    .a-input {
+      font-size: 1rem;
+      line-height: 1.5;
+      margin-bottom: 6px;
+    }
+    .a-input-control label {
+      margin: 0 16px;
+      font-size: 0.8em;
+    }
+    .a-input-control input {
+      border: 1px solid gainsboro;
+      padding: 5px 16px;
+      border-radius: 25px;
+      background: rgba(255,255,255,.1);
+      margin-top: 10px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .a-input-control input:focus {
+      outline: none;
+      border-color: #569aff;
+    }
+    .a-input-control.error input {
+      border-color: red;
+    }
+    .a-input-message{
+      color: red;
+      padding: 0 16px;
+      font-size: 0.7em;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      width: 90%;
+      margin: 0 auto;
+      font-size: 0.9em;
+      font-weight: 400;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid gainsboro;
+    }
+    .divider:not(:empty)::before {
+      margin-right: .25em;
+    }
+    .divider:not(:empty)::after {
+      margin-left: .25em;
+    }
+    .a-button {
+      width: 100%;
+      color: white;
+      background-color: #0066ff;
+      height: 2.5em;
+      border-radius: 7px;
+    }
+    .a-overlay {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      pointer-events: none;
+      position: fixed;
+      right: 0;
+      top: 0;
+      z-index: 2000;
+    }
+    .a-overlay .a-overlay-scrim {
+      background: black;
+      bottom: 0;
+      left: 0;
+      opacity: .32;
+      pointer-events: auto;
+      position: fixed;
+      right: 0;
+      top: 0;
+    }
+    .a-overlay .a-overlay-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: white;
+      position: absolute;
+      padding: 16px;
+    }
+  </style>
+  <div class="hidden layout" id="config">
+    <div class="title text-center">Controller Setup</div>
+    <form id="settings">
+      <div class="a-input">
+        <div class="a-input-control">
+          <label class="a-input-label" for="name">Controller Name</label>
+          <input id="name" type="text" autofocus name="name"></input>
+        </div>
+        <div class="a-input-message">
+          <span class="hidden">Controller name must be less than 30 characters</span>
+        </div>
+      </div>
+      <div class="divider">Wi-Fi credentials</div>
+      <div class="a-input">
+        <div class="a-input-control">
+          <label class="a-input-label" for="ssid">SSID</label>
+          <input id="ssid" type="text" name="ssid"></input>
+        </div>
+        <div class="a-input-message">
+          <span class="hidden">SSID is required</span>
+          <span class="hidden">SSID can be any alphanumeric, case-sensitive entry from 2 to 32 characters</span>
+        </div>
+      </div>
+      <div class="a-input">
+        <div class="a-input-control">
+          <label class="a-input-label" for="ssid">Password</label>
+          <input id="password" type="text" name="password"></input>
+        </div>
+        <div class="a-input-message">
+          <span class="hidden">Password is required</span>
+          <span class="hidden">Password can be 8 to 63 characters</span>
+        </div>
+      </div>
+      <button class="a-button" type="submit" style="margin-top: 16px;">Save</button>
+    </form>
+    <div style="margin-top: 20px;font-size: 0.9em;">Note:</div>
+    <div style="font-size: 0.75em;letter-spacing: .03em;font-weight: 400;line-height: 1.25rem;">Controller will automatically reboot after settings were saved. If the specified network cannot be connected, the controller will start the default AP and let you modify those settings.</div>
+    <div class="a-overlay hidden">
+      <div class="a-overlay-scrim"></div>
+      <div class="a-overlay-content">
+        <div class="text-caption">Waiting for controller to boot up......</div>
+        <div class="text-caption mt-2">Will redirect in <span id="timer">15</span>s.</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    if (location.pathname === '/config') {
+      const form = document.getElementById('settings');
+      form.onsubmit = function (ev) {
+        form.querySelector('button').disabled = true;
+        const nameEle = document.getElementById('name');
+        const ssidEle = document.getElementById('ssid');
+        const passwordEle = document.getElementById('password');
+        const name = nameEle.value.trim();
+        const ssid = ssidEle.value.trim();
+        const password = passwordEle.value.trim();
+        const validate = function () {
+          let valid = true;
+          const span = '.a-input-message span';
+          const fc = span + ':first-child';
+          const sc = span + ':nth-child(2)';
+          const namePEle = nameEle.parentElement;
+          if (name && name.length > 30) {
+            valid = false;
+            namePEle.classList.add('error');
+            namePEle.parentElement.querySelector(span).classList.remove('hidden');
+          } else {
+            namePEle.classList.remove('error');
+            namePEle.parentElement.querySelector(span).classList.add('hidden');
+          }
+
+          const ssidPEle = ssidEle.parentElement;
+          if (!ssid || (ssid && (ssid.length < 2 || ssid.length > 32)))
+          {
+            valid = false;
+            ssidPEle.classList.add('error');
+            if (!ssid) {
+              ssidPEle.parentElement.querySelector(fc).classList.remove('hidden');
+              ssidPEle.parentElement.querySelector(sc).classList.add('hidden');
+            } else {
+              ssidPEle.parentElement.querySelector(fc).classList.add('hidden');
+              ssidPEle.parentElement.querySelector(sc).classList.remove('hidden');
+            }
+          } else {
+            ssidPEle.classList.remove('error');
+            ssidPEle.parentElement.querySelectorAll(span).forEach(e => {
+              e.classList.add('hidden')
+            });
+          }
+
+          const passwordPEle = passwordEle.parentElement;
+          if (!password || (password && (password.length < 8 || password.length > 63)))
+          {
+            valid = false;
+            passwordPEle.classList.add('error');
+
+            if (!password) {
+              passwordPEle.parentElement.querySelector(fc).classList.remove('hidden');
+              passwordPEle.parentElement.querySelector(sc).classList.add('hidden');
+            } else {
+              passwordPEle.parentElement.querySelector(fc).classList.add('hidden');
+              passwordPEle.parentElement.querySelector(sc).classList.remove('hidden');
+            }
+          } else {
+            passwordPEle.classList.remove('error');
+            passwordPEle.parentElement.querySelectorAll(span).forEach(e => {
+              e.classList.add('hidden')
+            });
+          }
+          return valid;
+        };
+
+        if (validate()) {
+          const data = new URLSearchParams();
+          for (const pair of new FormData(form)) {
+            data.append(pair[0], pair[1].trim());
+          }
+          fetch('/api/config?' + data.toString(),{
+            method: 'post'
+          }).then(resp => {
+            if (resp.ok) {
+              const overlay = document.querySelector('.a-overlay');
+              overlay.classList.remove('hidden');
+              const content = overlay.querySelector('.a-overlay-content');
+              content.style.top = screen.height / 2 - content.clientHeight + 'px';
+              content.style.left = (screen.width - content.clientWidth) / 2 + 'px';
+            }
+          }).catch(reason => {
+            alert('Please check you Wi-Fi connection.')
+          })
+        }
+
+        ev.preventDefault();
+      };
+      document.getElementById('config').classList.remove('hidden');
+    }
+  </script>
+  <script type="module">
+    import { createApp } from 'vue';
+    import { createVuetify } from 'vuetify';
+
+    const vuetify = createVuetify({
+      theme: {
+        defaultTheme: 'custom',
+        themes: {
+          custom: {
+            dark: false,
+            colors: {
+              background: '#FFFFFF',
+              surface: '#FFFFFF',
+              'surface-bright': '#FFFFFF',
+              'surface-light': '#EEEEEE',
+              'surface-variant': '#424242',
+              'on-surface-variant': '#EEEEEE',
+              primary: '#1867C0',
+              'primary-darken-1': '#1F5592',
+              secondary: '#48A9A6',
+              'secondary-darken-1': '#018786',
+              error: '#B00020',
+              info: '#2196F3',
+              success: '#4CAF50',
+              warning: '#FB8C00',
+            },
+            variables: {
+              'border-color': '#000000',
+              'border-opacity': 0.12,
+              'high-emphasis-opacity': 0.87,
+              'medium-emphasis-opacity': 0.60,
+              'disabled-opacity': 0.38,
+              'idle-opacity': 0.04,
+              'hover-opacity': 0.04,
+              'focus-opacity': 0.12,
+              'selected-opacity': 0.08,
+              'activated-opacity': 0.12,
+              'pressed-opacity': 0.12,
+              'dragged-opacity': 0.08,
+              'theme-kbd': '#212529',
+              'theme-on-kbd': '#FFFFFF',
+              'theme-code': '#F5F5F5',
+              'theme-on-code': '#000000',
+            }
+          }
+        }
+      }
+    });
+
+     if (location.pathname === '/') {
+      createApp({
+        data: () => ({
+          drawer: null,
+          drawerRight: null,
+          right: false,
+          left: false
+        }),
+        props: {
+          source: String
+        }
+      }).use(vuetify).mount('#app');
+      document.getElementById('app').classList.remove('hidden');
+    }
+  </script>
+</body>
+
+</html>
