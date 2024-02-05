@@ -5264,7 +5264,7 @@
   (symbol (lib_id "Device:D_Small") (at 39.37 147.955 90) (unit 1)
     (in_bom yes) (on_board yes) (dnp no)
     (uuid fce5e9a4-75db-4ed6-a478-eb4496e7e98e)
-    (property "Reference" "D4" (at 38.1 147.32 90)
+    (property "Reference" "D4" (at 43.815 147.955 90)
       (effects (font (size 1.27 1.27)) (justify left))
     )
     (property "Value" "1N4007" (at 37.592 146.7429 90)
